@@ -1,0 +1,285 @@
+// Makkah Food Catering & Supply Forum
+// PostgreSQL schema — runs on Supabase in production and on embedded
+// PostgreSQL (PGlite) for local development.
+//
+// Security model: every read/write of attendee data goes through server-side
+// code using the database owner connection (never exposed to the browser).
+// RLS is enabled in migration 002 as defence in depth for Supabase's
+// PostgREST/anon access path.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum TicketStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum CheckInMethod {
+  QR
+  MANUAL
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum WhatsAppStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+enum ActorType {
+  ADMIN
+  STAFF
+  SYSTEM
+}
+
+model Registration {
+  id                 String             @id @default(uuid()) @db.Uuid
+  registrationNumber String             @unique @map("registration_number")
+  fullName           String             @map("full_name")
+  email              String
+  emailNormalized    String             @unique @map("email_normalized")
+  phone              String
+  phoneNormalized    String             @unique @map("phone_normalized")
+  countryCode        String             @map("country_code")
+  city               String
+  company            String
+  jobTitle           String             @map("job_title")
+  organizationType   String             @map("organization_type")
+  interest           String?
+  locale             String             @default("ar")
+  consentAt          DateTime           @map("consent_at")
+  status             RegistrationStatus @default(CONFIRMED)
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  cancelledAt        DateTime?          @map("cancelled_at")
+
+  ticket    Ticket?
+  checkIn   CheckIn?
+  emailLogs EmailLog[]
+  whatsappLogs WhatsAppLog[]
+
+  @@index([createdAt])
+  @@index([countryCode])
+  @@index([organizationType])
+  @@index([status])
+  @@map("registrations")
+}
+
+model Ticket {
+  id                String       @id @default(uuid()) @db.Uuid
+  registrationId    String       @unique @map("registration_id") @db.Uuid
+  tokenHash         String       @unique @map("token_hash")
+  /// AES-256-GCM encrypted raw token. Needed to re-send a ticket later.
+  tokenCipher       String       @map("token_cipher")
+  status            TicketStatus @default(CONFIRMED)
+  issuedAt          DateTime     @default(now()) @map("issued_at")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  checkIn      CheckIn?
+
+  @@index([status])
+  @@map("tickets")
+}
+
+model CheckIn {
+  id              String        @id @default(uuid()) @db.Uuid
+  ticketId        String        @unique @map("ticket_id") @db.Uuid
+  registrationId  String        @unique @map("registration_id") @db.Uuid
+  checkedInAt     DateTime      @default(now()) @map("checked_in_at")
+  method          CheckInMethod @default(QR)
+  gate            String?
+  adminUserId     String?       @map("admin_user_id") @db.Uuid
+  staffUserId     String?       @map("staff_user_id") @db.Uuid
+  operatorName    String        @map("operator_name")
+  ipHash          String?       @map("ip_hash")
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  ticket       Ticket       @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  adminUser    AdminUser?   @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  staffUser    StaffUser?   @relation(fields: [staffUserId], references: [id], onDelete: SetNull)
+
+  @@index([checkedInAt])
+  @@map("check_ins")
+}
+
+model AdminUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         AdminRole @default(ADMIN)
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  sessions  AuthSession[]
+  checkIns  CheckIn[]
+  createdStaff StaffUser[] @relation("StaffCreatedBy")
+  auditLogs AuditLog[] @relation("AuditAdmin")
+
+  @@map("admin_users")
+}
+
+model StaffUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdById  String?   @map("created_by_id") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  createdBy AdminUser?    @relation("StaffCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  sessions  AuthSession[]
+  checkIns  CheckIn[]
+  auditLogs AuditLog[] @relation("AuditStaff")
+
+  @@map("staff_users")
+}
+
+model AuthSession {
+  id          String   @id @default(uuid()) @db.Uuid
+  tokenHash   String   @unique @map("token_hash")
+  adminUserId String?  @map("admin_user_id") @db.Uuid
+  staffUserId String?  @map("staff_user_id") @db.Uuid
+  ipHash      String?  @map("ip_hash")
+  userAgent   String?  @map("user_agent")
+  expiresAt   DateTime @map("expires_at")
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  staffUser StaffUser? @relation(fields: [staffUserId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+model EventSettings {
+  id            String   @id @default("main")
+  eventDate     DateTime @map("event_date")
+  logoUrl       String   @default("/brand/logo-mark.svg") @map("logo_url")
+  heroImageUrl  String   @default("/images/hero.jpg") @map("hero_image_url")
+  aboutImageUrl String   @default("/images/about.jpg") @map("about_image_url")
+  venueImageUrl String   @default("/images/venue.jpg") @map("venue_image_url")
+  mapUrl        String   @map("map_url")
+  contactEmail  String   @map("contact_email")
+  contactPhone  String   @map("contact_phone")
+  whatsappNumber String  @default("") @map("whatsapp_number")
+  socialX       String   @default("") @map("social_x")
+  socialInstagram String @default("") @map("social_instagram")
+  socialLinkedin String  @default("") @map("social_linkedin")
+  socialYoutube String   @default("") @map("social_youtube")
+  whatsappEnabled Boolean @default(false) @map("whatsapp_enabled")
+  emailEnabled  Boolean  @default(true) @map("email_enabled")
+  content       Json
+  updatedById   String?  @map("updated_by_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("event_settings")
+}
+
+model EmailLog {
+  id             String      @id @default(uuid()) @db.Uuid
+  registrationId String      @map("registration_id") @db.Uuid
+  toEmail        String      @map("to_email")
+  template       String
+  locale         String
+  status         EmailStatus @default(PENDING)
+  providerId     String?     @map("provider_id")
+  error          String?
+  attempt        Int         @default(1)
+  sentById       String?     @map("sent_by_id")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  sentAt         DateTime?   @map("sent_at")
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("email_logs")
+}
+
+model WhatsAppLog {
+  id             String         @id @default(uuid()) @db.Uuid
+  registrationId String         @map("registration_id") @db.Uuid
+  toPhone        String         @map("to_phone")
+  status         WhatsAppStatus @default(PENDING)
+  providerId     String?        @map("provider_id")
+  error          String?
+  channel        String         @default("cloud_api")
+  template       String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+  sentAt         DateTime?      @map("sent_at")
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId])
+  @@index([createdAt])
+  @@map("whatsapp_logs")
+}
+
+model AuditLog {
+  id         String    @id @default(uuid()) @db.Uuid
+  actorType  ActorType @map("actor_type")
+  actorId    String?   @map("actor_id") @db.Uuid
+  actorName  String    @map("actor_name")
+  action     String
+  entityType String    @map("entity_type")
+  entityId   String?   @map("entity_id")
+  details    Json?
+  ipHash     String?   @map("ip_hash")
+  userAgent  String?   @map("user_agent")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  adminUser AdminUser? @relation("AuditAdmin", fields: [actorId], references: [id], onDelete: SetNull, map: "audit_logs_admin_user_id_fkey")
+  staffUser StaffUser? @relation("AuditStaff", fields: [actorId], references: [id], onDelete: SetNull, map: "audit_logs_staff_user_id_fkey")
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model RateLimit {
+  key         String
+  windowStart DateTime @map("window_start")
+  count       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@id([key, windowStart])
+  @@index([windowStart])
+  @@map("rate_limits")
+}
