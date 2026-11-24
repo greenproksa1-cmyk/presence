@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Mail, MapPin, Phone, QrCode } from "lucide-react";
-import { getDictionary, getLocale } from "@/i18n";
+import { getDictionary } from "@/i18n";
+import { getLocale } from "@/i18n/server";
 import {
   formatEventDate,
   getEventSettings,

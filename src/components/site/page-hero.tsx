@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import type { Locale } from "@/lib/types";
 import { cn } from "@/lib/format";
 
 export function PageHero({
   eyebrow,
   title,
   description,
-  locale,
   homeLabel,
   homeHref = "/",
   currentLabel,
@@ -17,7 +15,6 @@ export function PageHero({
   eyebrow?: string;
   title: string;
   description?: string;
-  locale: Locale;
   homeLabel: string;
   homeHref?: string;
   currentLabel: string;

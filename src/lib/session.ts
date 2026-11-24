@@ -1,14 +1,17 @@
-import { cache } from "react";
 import { cookies } from "next/headers";
 import { createHmac } from "node:crypto";
 import { redirect } from "next/navigation";
-import type { AdminRole } from "@prisma/client";
+import type { AdminRole, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { generateSessionToken, getSessionSecret, hashIp, hashToken } from "@/lib/crypto";
 
 export const SESSION_COOKIE = "mff_session";
 const SESSION_MAX_AGE_HOURS = 12;
 const SESSION_IDLE_MINUTES = 120;
+
+type SessionWithUsers = Prisma.AuthSessionGetPayload<{
+  include: { adminUser: true; staffUser: true };
+}>;
 
 export type AuthRole = "ADMIN" | "STAFF";
 
@@ -91,9 +94,7 @@ export const getAuth = async (): Promise<AuthContext> => {
   if (!token) return { user: null, sessionId: null, unavailable: false };
 
   const READ_FAILED = Symbol("session-read-failed");
-  let session:
-    | Awaited<ReturnType<typeof prisma.authSession.findUnique>>
-    | typeof READ_FAILED = READ_FAILED;
+  let session: SessionWithUsers | null | typeof READ_FAILED = READ_FAILED;
 
   try {
     session = await prisma.authSession.findUnique({

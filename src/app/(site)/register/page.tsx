@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, MapPin, QrCode, ShieldCheck, Ticket } from "lucide-react";
-import { getDictionary, getLocale, localized } from "@/i18n";
+import { getDictionary, localized } from "@/i18n";
+import { getLocale } from "@/i18n/server";
 import { getEventSettings, formatEventDate } from "@/lib/site-content";
 import { getCountryOptions } from "@/lib/countries";
 import { ORGANIZATION_TYPES } from "@/lib/types";
@@ -25,7 +26,6 @@ export default async function RegisterPage() {
     label: dict.orgTypes[value],
   }));
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || null;
-  const startedAt = Date.now();
 
   return (
     <>
@@ -33,7 +33,6 @@ export default async function RegisterPage() {
         eyebrow={dict.nav.register}
         title={dict.register.title}
         description={dict.register.description}
-        locale={locale}
         homeLabel={dict.nav.home}
         currentLabel={dict.nav.register}
         compact
@@ -74,7 +73,6 @@ export default async function RegisterPage() {
                 countries={countries}
                 orgTypes={orgTypes}
                 turnstileSiteKey={turnstileSiteKey}
-                startedAt={startedAt}
               />
             </div>
           </Card>

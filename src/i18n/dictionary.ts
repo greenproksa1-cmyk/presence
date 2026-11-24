@@ -10,6 +10,14 @@ export interface Dictionary {
     register: string;
     privacy: string;
     admin: string;
+    dashboard: string;
+    registrations: string;
+    checkIn: string;
+    staff: string;
+    reports: string;
+    settings: string;
+    auditLogs: string;
+    signOut: string;
   };
   header: {
     registerCta: string;
@@ -196,6 +204,165 @@ export interface Dictionary {
     backToSite: string;
     staffNotice: string;
   };
+  admin: {
+    consoleLabel: string;
+    signedInAs: string;
+    limitedAccess: string;
+    dashboard: {
+      title: string;
+      subtitle: string;
+      totalRegistrations: string;
+      confirmed: string;
+      cancelled: string;
+      checkedIn: string;
+      attendanceRate: string;
+      recent: string;
+      viewAll: string;
+      empty: string;
+      openCheckIn: string;
+      exportData: string;
+    };
+    registrations: {
+      title: string;
+      subtitle: string;
+      searchPlaceholder: string;
+      filterAll: string;
+      filterConfirmed: string;
+      filterCancelled: string;
+      filterCheckedIn: string;
+      name: string;
+      email: string;
+      phone: string;
+      company: string;
+      type: string;
+      date: string;
+      status: string;
+      checkIn: string;
+      actions: string;
+      details: string;
+      cancelAction: string;
+      cancelConfirm: string;
+      cancelDone: string;
+      cancelFailed: string;
+      exportCsv: string;
+      empty: string;
+      previous: string;
+      next: string;
+      showing: string;
+    };
+    checkIn: {
+      title: string;
+      subtitle: string;
+      scanTitle: string;
+      scanDescription: string;
+      startCamera: string;
+      stopCamera: string;
+      cameraError: string;
+      manualTitle: string;
+      manualDescription: string;
+      placeholder: string;
+      submit: string;
+      submitting: string;
+      validTitle: string;
+      validBody: string;
+      alreadyTitle: string;
+      alreadyBody: string;
+      cancelledTitle: string;
+      cancelledBody: string;
+      invalidTitle: string;
+      invalidBody: string;
+      at: string;
+      operator: string;
+      gate: string;
+      clear: string;
+      recentTitle: string;
+      emptyRecent: string;
+    };
+    staff: {
+      title: string;
+      subtitle: string;
+      admins: string;
+      staff: string;
+      addTitle: string;
+      name: string;
+      email: string;
+      password: string;
+      passwordHint: string;
+      generate: string;
+      create: string;
+      creating: string;
+      created: string;
+      createFailed: string;
+      active: string;
+      inactive: string;
+      activate: string;
+      deactivate: string;
+      lastLogin: string;
+      never: string;
+      empty: string;
+      roleAdmin: string;
+      roleStaff: string;
+      passwordOnce: string;
+    };
+    reports: {
+      title: string;
+      subtitle: string;
+      byOrganization: string;
+      byCountry: string;
+      byDay: string;
+      summary: string;
+      total: string;
+      checkedIn: string;
+      attendanceRate: string;
+      exportRegistrations: string;
+      exportCheckIns: string;
+      empty: string;
+    };
+    settings: {
+      title: string;
+      subtitle: string;
+      eventSection: string;
+      eventDate: string;
+      contactSection: string;
+      contactEmail: string;
+      contactPhone: string;
+      whatsappNumber: string;
+      linksSection: string;
+      logoUrl: string;
+      heroImageUrl: string;
+      aboutImageUrl: string;
+      venueImageUrl: string;
+      mapUrl: string;
+      brandSection: string;
+      brandNameAr: string;
+      brandNameEn: string;
+      brandShortAr: string;
+      brandShortEn: string;
+      brandTaglineAr: string;
+      brandTaglineEn: string;
+      heroDescriptionAr: string;
+      heroDescriptionEn: string;
+      togglesSection: string;
+      emailEnabled: string;
+      whatsappEnabled: string;
+      save: string;
+      saving: string;
+      saved: string;
+      saveFailed: string;
+      contentNote: string;
+    };
+    audit: {
+      title: string;
+      subtitle: string;
+      actor: string;
+      action: string;
+      entity: string;
+      when: string;
+      empty: string;
+      previous: string;
+      next: string;
+    };
+  };
   orgTypes: Record<OrganizationTypeKey, string>;
 }
 
@@ -209,6 +376,14 @@ const ar: Dictionary = {
     register: "التسجيل",
     privacy: "سياسة الخصوصية",
     admin: "لوحة التحكم",
+    dashboard: "النظرة العامة",
+    registrations: "التسجيلات",
+    checkIn: "تسجيل الحضور",
+    staff: "الفريق والصلاحيات",
+    reports: "التقارير",
+    settings: "إعدادات الموقع",
+    auditLogs: "سجل العمليات",
+    signOut: "تسجيل الخروج",
   },
   header: {
     registerCta: "سجل حضورك الآن",
@@ -398,6 +573,165 @@ const ar: Dictionary = {
     backToSite: "العودة إلى الموقع",
     staffNotice: "موظفو الاستقبال يمكنهم الوصول إلى شاشة تسجيل الحضور فقط.",
   },
+  admin: {
+    consoleLabel: "لوحة تحكم المنظمين",
+    signedInAs: "مسجّل الدخول",
+    limitedAccess: "صلاحيات محدودة: تسجيل الحضور فقط.",
+    dashboard: {
+      title: "النظرة العامة",
+      subtitle: "ملخّص مباشر لحالة التسجيل والحضور في المنتدى.",
+      totalRegistrations: "إجمالي التسجيلات",
+      confirmed: "تسجيلات مؤكدة",
+      cancelled: "تسجيلات ملغاة",
+      checkedIn: "حضور مؤكد",
+      attendanceRate: "نسبة الحضور",
+      recent: "أحدث التسجيلات",
+      viewAll: "عرض كل التسجيلات",
+      empty: "لا توجد تسجيلات بعد.",
+      openCheckIn: "فتح شاشة تسجيل الحضور",
+      exportData: "تنزيل ملف CSV",
+    },
+    registrations: {
+      title: "التسجيلات",
+      subtitle: "ابحث في سجلات الزوار، راجع التذاكر، وألغِ التسجيلات عند الحاجة.",
+      searchPlaceholder: "ابحث بالاسم أو البريد أو رقم التسجيل…",
+      filterAll: "الكل",
+      filterConfirmed: "مؤكدة",
+      filterCancelled: "ملغاة",
+      filterCheckedIn: "حضر",
+      name: "الاسم",
+      email: "البريد الإلكتروني",
+      phone: "الجوال",
+      company: "جهة العمل",
+      type: "نوع الجهة",
+      date: "تاريخ التسجيل",
+      status: "الحالة",
+      checkIn: "الحضور",
+      actions: "الإجراءات",
+      details: "التفاصيل",
+      cancelAction: "إلغاء",
+      cancelConfirm: "هل تريد إلغاء هذا التسجيل؟ ستُلغى تذكرته أيضاً.",
+      cancelDone: "تم إلغاء التسجيل.",
+      cancelFailed: "تعذّر إلغاء التسجيل.",
+      exportCsv: "تصدير CSV",
+      empty: "لا توجد نتائج مطابقة.",
+      previous: "السابق",
+      next: "التالي",
+      showing: "عرض",
+    },
+    checkIn: {
+      title: "تسجيل الحضور",
+      subtitle: "امسح رمز QR أو أدخل رقم التسجيل يدوياً للتحقق من التذكرة.",
+      scanTitle: "مسح رمز QR",
+      scanDescription: "استخدم كاميرا الجهاز لقراءة رمز التذكرة.",
+      startCamera: "تشغيل الكاميرا",
+      stopCamera: "إيقاف الكاميرا",
+      cameraError: "تعذّر الوصول إلى الكاميرا. يمكنك إدخال رقم التسجيل يدوياً.",
+      manualTitle: "إدخال يدوي",
+      manualDescription: "أدخل رقم التسجيل كما يظهر على التذكرة.",
+      placeholder: "MFF-2027-01001",
+      submit: "تحقق وسجّل الحضور",
+      submitting: "جارٍ التحقق…",
+      validTitle: "تم تسجيل الحضور",
+      validBody: "التذكرة صحيحة وتم تسجيل حضور الزائر.",
+      alreadyTitle: "تم تسجيل الحضور مسبقاً",
+      alreadyBody: "هذه التذكرة استُخدمت للدخول سابقاً.",
+      cancelledTitle: "تذكرة ملغاة",
+      cancelledBody: "لا يمكن استخدام هذه التذكرة للدخول.",
+      invalidTitle: "تذكرة غير صحيحة",
+      invalidBody: "لم يتم العثور على تذكرة مطابقة.",
+      at: "وقت الحضور",
+      operator: "الموظف",
+      gate: "البوابة",
+      clear: "مسح النتيجة",
+      recentTitle: "آخر عمليات التحقق",
+      emptyRecent: "لا توجد عمليات تحقق بعد.",
+    },
+    staff: {
+      title: "الفريق والصلاحيات",
+      subtitle: "أنشئ حسابات موظفي الاستقبال وأدر حالة الوصول.",
+      admins: "المديرون",
+      staff: "موظفو الاستقبال",
+      addTitle: "إضافة موظف استقبال",
+      name: "الاسم",
+      email: "البريد الإلكتروني",
+      password: "كلمة المرور",
+      passwordHint: "12 حرفاً على الأقل وتتضمن حروفاً وأرقاماً. اتركها فارغة لتوليد كلمة مرور قوية.",
+      generate: "توليد كلمة مرور",
+      create: "إنشاء الحساب",
+      creating: "جارٍ الإنشاء…",
+      created: "تم إنشاء الحساب.",
+      createFailed: "تعذّر إنشاء الحساب. تحقق من البيانات.",
+      active: "نشط",
+      inactive: "موقوف",
+      activate: "تفعيل",
+      deactivate: "إيقاف",
+      lastLogin: "آخر دخول",
+      never: "لم يسجل الدخول",
+      empty: "لا يوجد موظفو استقبال بعد.",
+      roleAdmin: "مدير",
+      roleStaff: "موظف استقبال",
+      passwordOnce: "انسخ كلمة المرور الآن؛ لن تُعرض مرة أخرى.",
+    },
+    reports: {
+      title: "التقارير",
+      subtitle: "إحصاءات مجمّعة عن التسجيل والحضور وتوزيع الجهات.",
+      byOrganization: "التوزيع حسب نوع الجهة",
+      byCountry: "التوزيع حسب الدولة",
+      byDay: "التسجيلات اليومية",
+      summary: "الملخّص",
+      total: "إجمالي التسجيلات",
+      checkedIn: "عدد الحضور",
+      attendanceRate: "نسبة الحضور",
+      exportRegistrations: "تصدير التسجيلات CSV",
+      exportCheckIns: "تصدير الحضور CSV",
+      empty: "لا توجد بيانات كافية لعرض التقارير.",
+    },
+    settings: {
+      title: "إعدادات الموقع",
+      subtitle: "حدّث بيانات الفعالية والمحتوى الظاهر للزوار.",
+      eventSection: "بيانات الفعالية",
+      eventDate: "تاريخ الفعالية",
+      contactSection: "بيانات التواصل",
+      contactEmail: "البريد الإلكتروني",
+      contactPhone: "رقم التواصل",
+      whatsappNumber: "رقم واتساب",
+      linksSection: "الروابط والصور",
+      logoUrl: "رابط الشعار",
+      heroImageUrl: "صورة الواجهة",
+      aboutImageUrl: "صورة عن المنتدى",
+      venueImageUrl: "صورة المكان",
+      mapUrl: "رابط الخريطة",
+      brandSection: "هوية المنتدى",
+      brandNameAr: "اسم المنتدى (عربي)",
+      brandNameEn: "اسم المنتدى (إنجليزي)",
+      brandShortAr: "الاسم المختصر (عربي)",
+      brandShortEn: "الاسم المختصر (إنجليزي)",
+      brandTaglineAr: "الشعار النصي (عربي)",
+      brandTaglineEn: "الشعار النصي (إنجليزي)",
+      heroDescriptionAr: "وصف الواجهة (عربي)",
+      heroDescriptionEn: "وصف الواجهة (إنجليزي)",
+      togglesSection: "قنوات الإرسال",
+      emailEnabled: "تفعيل إرسال التذاكر بالبريد",
+      whatsappEnabled: "تفعيل إرسال التذاكر عبر واتساب",
+      save: "حفظ الإعدادات",
+      saving: "جارٍ الحفظ…",
+      saved: "تم حفظ الإعدادات.",
+      saveFailed: "تعذّر حفظ الإعدادات.",
+      contentNote: "تُطبّق التغييرات على الموقع فوراً بعد الحفظ.",
+    },
+    audit: {
+      title: "سجل العمليات",
+      subtitle: "سجل غير قابل للتعديل للعمليات الإدارية الحساسة.",
+      actor: "المستخدم",
+      action: "العملية",
+      entity: "الكيان",
+      when: "التاريخ",
+      empty: "لا توجد عمليات مسجلة.",
+      previous: "الأحدث",
+      next: "الأقدم",
+    },
+  },
   orgTypes: {
     catering: "شركة إعاشة وتموين",
     food_beverage: "شركة أغذية ومشروبات",
@@ -423,6 +757,14 @@ const en: Dictionary = {
     register: "Register",
     privacy: "Privacy policy",
     admin: "Admin",
+    dashboard: "Dashboard",
+    registrations: "Registrations",
+    checkIn: "Check-in",
+    staff: "Team & access",
+    reports: "Reports",
+    settings: "Site settings",
+    auditLogs: "Audit log",
+    signOut: "Sign out",
   },
   header: {
     registerCta: "Register now",
@@ -622,6 +964,166 @@ const en: Dictionary = {
     rateLimited: "Too many sign-in attempts. Please try again in 15 minutes.",
     backToSite: "Back to website",
     staffNotice: "Reception staff can only access the check-in screen.",
+  },
+  admin: {
+    consoleLabel: "Organiser console",
+    signedInAs: "Signed in as",
+    limitedAccess: "Limited access: check-in only.",
+    dashboard: {
+      title: "Dashboard",
+      subtitle: "A live summary of registration and attendance.",
+      totalRegistrations: "Total registrations",
+      confirmed: "Confirmed",
+      cancelled: "Cancelled",
+      checkedIn: "Checked in",
+      attendanceRate: "Attendance rate",
+      recent: "Latest registrations",
+      viewAll: "View all registrations",
+      empty: "No registrations yet.",
+      openCheckIn: "Open check-in",
+      exportData: "Download CSV",
+    },
+    registrations: {
+      title: "Registrations",
+      subtitle: "Search attendee records, review tickets and cancel when needed.",
+      searchPlaceholder: "Search by name, email or registration no.…",
+      filterAll: "All",
+      filterConfirmed: "Confirmed",
+      filterCancelled: "Cancelled",
+      filterCheckedIn: "Checked in",
+      name: "Name",
+      email: "Email",
+      phone: "Mobile",
+      company: "Organisation",
+      type: "Type",
+      date: "Registered",
+      status: "Status",
+      checkIn: "Attendance",
+      actions: "Actions",
+      details: "Details",
+      cancelAction: "Cancel",
+      cancelConfirm: "Cancel this registration? Its ticket will be cancelled too.",
+      cancelDone: "Registration cancelled.",
+      cancelFailed: "Could not cancel the registration.",
+      exportCsv: "Export CSV",
+      empty: "No matching records.",
+      previous: "Previous",
+      next: "Next",
+      showing: "Showing",
+    },
+    checkIn: {
+      title: "Check-in",
+      subtitle: "Scan a QR code or enter a registration number to verify a ticket.",
+      scanTitle: "Scan QR code",
+      scanDescription: "Use this device's camera to read the ticket code.",
+      startCamera: "Start camera",
+      stopCamera: "Stop camera",
+      cameraError: "Camera unavailable. You can enter the registration number manually.",
+      manualTitle: "Manual entry",
+      manualDescription: "Enter the registration number printed on the ticket.",
+      placeholder: "MFF-2027-01001",
+      submit: "Verify & check in",
+      submitting: "Verifying…",
+      validTitle: "Checked in",
+      validBody: "The ticket is valid and attendance was recorded.",
+      alreadyTitle: "Already checked in",
+      alreadyBody: "This ticket has already been used for entry.",
+      cancelledTitle: "Cancelled ticket",
+      cancelledBody: "This ticket cannot be used for entry.",
+      invalidTitle: "Invalid ticket",
+      invalidBody: "No matching ticket was found.",
+      at: "Checked in at",
+      operator: "Operator",
+      gate: "Gate",
+      clear: "Clear result",
+      recentTitle: "Recent verifications",
+      emptyRecent: "No verifications yet.",
+    },
+    staff: {
+      title: "Team & access",
+      subtitle: "Create reception accounts and manage their access.",
+      admins: "Administrators",
+      staff: "Reception staff",
+      addTitle: "Add reception staff",
+      name: "Name",
+      email: "Email",
+      password: "Password",
+      passwordHint:
+        "At least 12 characters with letters and digits. Leave empty to generate a strong password.",
+      generate: "Generate password",
+      create: "Create account",
+      creating: "Creating…",
+      created: "Account created.",
+      createFailed: "Could not create the account. Check the details.",
+      active: "Active",
+      inactive: "Disabled",
+      activate: "Activate",
+      deactivate: "Disable",
+      lastLogin: "Last sign-in",
+      never: "Never signed in",
+      empty: "No reception staff yet.",
+      roleAdmin: "Administrator",
+      roleStaff: "Reception staff",
+      passwordOnce: "Copy this password now — it will not be shown again.",
+    },
+    reports: {
+      title: "Reports",
+      subtitle: "Aggregated registration and attendance statistics.",
+      byOrganization: "By organisation type",
+      byCountry: "By country",
+      byDay: "Registrations per day",
+      summary: "Summary",
+      total: "Total registrations",
+      checkedIn: "Checked in",
+      attendanceRate: "Attendance rate",
+      exportRegistrations: "Export registrations CSV",
+      exportCheckIns: "Export check-ins CSV",
+      empty: "Not enough data to build reports yet.",
+    },
+    settings: {
+      title: "Site settings",
+      subtitle: "Update event details and the public content shown to visitors.",
+      eventSection: "Event details",
+      eventDate: "Event date",
+      contactSection: "Contact details",
+      contactEmail: "Email",
+      contactPhone: "Phone",
+      whatsappNumber: "WhatsApp number",
+      linksSection: "Links & images",
+      logoUrl: "Logo URL",
+      heroImageUrl: "Hero image",
+      aboutImageUrl: "About image",
+      venueImageUrl: "Venue image",
+      mapUrl: "Map URL",
+      brandSection: "Forum identity",
+      brandNameAr: "Forum name (Arabic)",
+      brandNameEn: "Forum name (English)",
+      brandShortAr: "Short name (Arabic)",
+      brandShortEn: "Short name (English)",
+      brandTaglineAr: "Tagline (Arabic)",
+      brandTaglineEn: "Tagline (English)",
+      heroDescriptionAr: "Hero description (Arabic)",
+      heroDescriptionEn: "Hero description (English)",
+      togglesSection: "Delivery channels",
+      emailEnabled: "Email ticket delivery",
+      whatsappEnabled: "WhatsApp ticket delivery",
+      save: "Save settings",
+      saving: "Saving…",
+      saved: "Settings saved.",
+      saveFailed: "Could not save the settings.",
+      contentNote: "Changes are applied to the site immediately after saving.",
+    },
+    audit: {
+      title: "Audit log",
+      subtitle: "An immutable record of sensitive administrative actions.",
+      actor: "Actor",
+      action: "Action",
+      entity: "Entity",
+      when: "When",
+      empty: "No recorded actions.",
+      previous: "Newer",
+      next: "Older",
+    },
   },
   orgTypes: {
     catering: "Catering & food supply company",

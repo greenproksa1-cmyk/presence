@@ -5,7 +5,7 @@ export default function SiteLayout({ children }: Readonly<{ children: React.Reac
   return (
     <div className="flex min-h-screen flex-col bg-cream-100">
       <SiteHeader />
-      <main id="main" className="flex-1">
+      <main id="main" tabIndex={-1} className="flex-1">
         {children}
       </main>
       <SiteFooter />

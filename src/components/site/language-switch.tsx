@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
 import { cn } from "@/lib/format";
-import { LOCALE_COOKIE } from "@/i18n";
+import { LOCALE_COOKIE } from "@/i18n/core";
 import type { Locale } from "@/lib/types";
 
 export function LanguageSwitch({

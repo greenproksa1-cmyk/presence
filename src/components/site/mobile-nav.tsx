@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/format";
-import type { Locale } from "@/lib/types";
 
 interface NavItem {
   href: string;
@@ -18,21 +17,15 @@ export function MobileNav({
   official,
   menuLabel,
   closeLabel,
-  locale,
 }: {
   items: NavItem[];
   cta: string;
   official: string;
   menuLabel: string;
   closeLabel: string;
-  locale: Locale;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -72,6 +65,7 @@ export function MobileNav({
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setOpen(false)}
                 className={cn(
                   "flex items-center justify-between rounded-xl px-4 py-3 text-[0.95rem] font-medium text-navy-900 transition-colors hover:bg-white",
                   active && "bg-white text-gold-700",
@@ -84,6 +78,7 @@ export function MobileNav({
           })}
           <Link
             href="/register"
+            onClick={() => setOpen(false)}
             className="mt-3 flex h-12 items-center justify-center rounded-xl bg-gold-400 px-5 font-bold text-navy-950"
           >
             {cta}

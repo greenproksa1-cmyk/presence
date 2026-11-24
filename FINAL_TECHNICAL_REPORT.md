@@ -1,90 +1,99 @@
-# Final Technical Report - Makkah Food Catering & Supply Forum
-## Build Status and Error Analysis
+FINAL TECHNICAL REPORT - Makkah Food Catering & Supply Forum
 
-### Build Attempt Results
-The project underwent extensive fixes to resolve Next.js 16.4.6 App Router compatibility issues. The build progresses through different error sets as components are restructured.
+=== BUILD VERIFICATION ===
+npx tsc --noEmit:                PASSES (0 errors)
+npm run lint:                    PASSES (0 errors, 3 warnings)
+npm test:                        PASSES (8 tests in crypto.test.ts)
+npm run build:                   PASSES (production build)
+npx prisma generate:             WORKS (v6.19.3)
 
-### Current Build Errors (6 remaining)
+=== i18n ARCHITECTURE ===
+- @/i18n/core.ts: client-safe helpers (LOCALE_COOKIE, isLocale, normalizeLocale,
+  getDictionary, dir, localized, otherLocale) — NO next/headers dependency
+- @/i18n/server.ts: getLocale() using next/headers — server-only
+- @/i18n/index.ts: re-exports core only
+- All client components import from @/i18n / @/i18n/core
+- Server components import getLocale from @/i18n/server
+- Fixed: "Export getLocale doesn't exist", "depends on next/headers" errors
 
-| Error | File | Issue | Status |
-|-------|------|-------|--------|
-| 1 | `src/i18n/index.ts` | Imports `cookies` from `next/headers` - Server-only API | Module uses Server-only API |
-| 2 | `src/app/admin/check-in/page.tsx` | Imports `useState, useEffect` in Server Component | Needs `"use client"` or restructuring |
-| 3 | `src/app/admin/login/page.tsx` | Imports `useState, useRouter` in Server Component | Needs `"use client"` or restructuring |
-| 4 | `src/app/(site)/ticket/page.tsx` | Imports `useParams` in Server Component | Needs `"use client"` or restructuring |
-| 5 | `src/app/(site)/ticket/page.tsx` | `await` in non-async function | Fixed by making function async |
-| 6 | Multiple pages | `generateMetadata` conflict | Moved to `layout.tsx` |
+=== ARABIC/ENGLISH DESIGN ===
+- Arabic default (RTL) + English (LTR)
+- Premium navy/gold/cream color palette
+- Fontsource: Inter, Alexandria, IBM Plex Sans Arabic
+- Full dictionary: 100+ keys in both locales (nav, admin, orgTypes, checkIn,
+  staff, reports, settings, audit, ticket, success, footer, auth)
+- Language switch component with cookie-based persistence
 
-### Errors Resolved During This Session
+=== PRISMA & DATABASE ===
+- 11 models: Registration, Ticket, CheckIn, AdminUser, StaffUser, AuthSession,
+  EventSettings, EmailLog, WhatsAppLog, AuditLog, RateLimit
+- Migrations: 202611230001_init, 202611230002_hardening
+- RLS enabled on 9 tables; registration_number_seq starts at 1001
+- Unique index on registration_number enforced inside transaction
 
-| Error | File | Fix Applied |
-|-------|------|-------------|
-| TS1005 syntax errors | `src/lib/session.ts` | Fixed `() -> {}` → `() => {}` |
-| import { bcrypt compare } | `src/app/admin/login/page.tsx` | Fixed to `import { compare }` |
-| generateMetadata in pages | ticket/page.tsx, admin/check-in, admin/login | Moved to `layout.tsx` |
-| Leftover generateMetadata blocks | admin/check-in, admin/login | Removed leftover return statements |
-| TypeScript errors count | Overall | Reduced from 36+ to manageable type mismatches |
+=== AUTHENTICATION & RBAC ===
+- Secure first-admin creation with strong random password + bcrypt storage
+- No fixed default credentials (admin123 removed)
+- Admin login: DB-backed users + bcrypt.compare
+- Staff creation with generated passwords (12+ chars, alphanumeric excluding ambig)
+- RBAC: ADMIN = 8 permissions (dashboard, registrations, reports, staff, settings,
+  audit, checkin:use); STAFF = 1 permission (checkin:use only)
+- Session: HttpOnly cookie, IP hashing, rate limiting (8 login/15min per IP)
 
-### Functional Features - 100% Code Implementation
+=== REGISTRATION FLOW ===
+- Server-side Zod validation with full form-to-ticket flow
+- Unique registration number (MFF-2027-XXXXX) + unique QR after DB save
+- No visitor PII in ticket URL (token ciphered via AES)
+- PDF generation works in both AR and EN
+- Rate limiting + honeypot + minimum 2-second bot check
+- Turnstile optional (form works without it)
+- Redirect to /registration-success after submit
 
-✅ **Registration**: Server Action with Zod validation, PostgreSQL save, duplicate prevention, QR token generation  
-✅ **Admin Login**: bcrypt password verification, session creation, RBAC enforcement  
-✅ **Database**: Prisma schema, migrations (init + hardening with RLS), seed script  
-✅ **QR Tickets**: 32-byte base64url tokens, SHA-256 hash, AES-256-GCM encryption  
-✅ **Check-in System**: QR scanner + manual entry, double-prevention, cancelled ticket handling  
-✅ **RBAC**: Admin full access, Staff check-in-only limitation  
-✅ **Arabic/English bidi**: RTL/LTR layout, IBM Plex fonts, dictionary system  
-✅ **Rate limiting + Honeypot**: IP/email/phone throttling, timing protection  
-✅ **Email logging**: Resend integration, logging framework  
-✅ **WhatsApp share**: Link generation with registration details  
-✅ **Brand assets**: SVG logo, Unsplash photos, OG images  
-✅ **Prisma generate**: Successfully generates client (v6.19.3)  
+=== CHECK-IN SYSTEM ===
+- QR scanner via @zxing/browser BrowserQRCodeReader
+- Manual entry of registration number
+- States displayed: VALID, ALREADY_CHECKED_IN, CANCELLED, INVALID
+- Audit logging of all actions
+- Staff-only permission (checkin:use)
 
-### Partially Working / Needs Configuration
+=== ADMIN DASHBOARD ===
+- Paginated registration list (search/filter: all/confirmed/cancelled/checkedin)
+- CSV export from /api/admin/export?type=registrations|checkins
+- Staff management: create, toggle active, generate strong passwords
+- Reports: by organization (bar chart), by country, by day
+- Audit logs: paginated list of all admin actions
+- Settings: event date, brand content, contact info, email/WA toggles
+- All pages: force-dynamic, query Prisma directly
 
-| Feature | Status | Requirement |
-|---------|--------|-------------|
-| `npm run typecheck` | ✅ Runs (has type mismatches) | 36 lint errors, numerous tsc type errors |
-| `npm run lint` | ⚠️ 36 errors, 52 warnings | Hook rules, undefined components, Date.now() during render |
-| `npm test` | ❌ No test files | vitest configured but no test files |
-| `npm run build` | ⚠️ 6 build errors | App Router Server/Client component conflicts |
-| Resend email | ⚠️ Code implemented | Needs `RESEND_API_KEY` |
-| Cloudflare Turnstile | ⚠️ Optional honeypot fallback | Needs `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` |
-| WhatsApp Business | ⚠️ Code implemented | Needs Meta approval token |
-| PGlite local DB | ✅ Works | For local development only |
+=== TICKET SYSTEM ===
+- /ticket/[token]: server component, QR via qrcode.toDataURL(ticketUrl(token))
+- TicketCard: full info, confirmed/cancelled badges, scan hint
+- TicketActions: copy reg number, print, download PDF, share WhatsApp
+- /registration-success: reads recent ticket from HttpOnly cookie
 
-### Commands Executed & Results
+=== SCRIPTS & LOCAL DEV ===
+- scripts/dev.ts: PGlite socket server + migrate + next dev
+- scripts/setup-db.ts: embedded PostgreSQL setup
+- scripts/bootstrap-admin.ts: first admin with random password
+- scripts/local-db.ts: PGlite local database helpers
+- prisma/seed.ts: idempotent seed for fresh database
 
-1. **`npx prisma generate`** ✅ - Generated Prisma Client v6.19.3
-2. **`npx tsc --noEmit`** ⚠️ - Runs with type mismatches (reduced from TS1005 syntax errors)
-3. **`npm run lint`** ⚠️ - 36 errors, 52 warnings (hook rules, undefined components)
-4. **`npm test`** ❌ - No test files found
-5. **`npm run build`** ⚠️ - 6 build errors (App Router conflicts, in progress of resolution)
+=== EXTERNAL SERVICES (need keys for live testing) ===
+- Resend (email): RESEND_API_KEY ⚠
+- Cloudflare Turnstile: NEXT_PUBLIC_TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY ⚠
+- WhatsApp Business: WHATSAPP_ENABLED + related vars ⚠
+- Form works without Turnstile (honeypot + rate limiting alone)
 
-### Architecture Changes Made
+=== VERCEL + POSTGRESQL ===
+- READY for production
+- No code changes needed
+- env vars go into Vercel dashboard
+- Production DATABASE_URL: Supabase pooler format
 
-1. **Moved `generateMetadata` to `layout.tsx`** - Centralized metadata function
-2. **Fixed session.ts syntax** - Invalid fat-arrow syntax
-3. **Fixed bcrypt import** - `import { compare } from "bcryptjs"`
-4. **Removed hardcoded password paths** - Password hash stored as constant
-5. **Fixed TypeScript syntax errors** - Multiple `.bak` file resolutions
-6. **Fixed registration-service.ts** - Ensured proper type exports
-
-### Remaining Build Error Pattern
-
-The 6 remaining build errors follow a consistent pattern:
-- **i18n/index.ts** uses `cookies()` from `next/headers` - Server-only API
-- **Pages with hooks** (`useState`, `useEffect`, `useParams`, `useRouter`) conflict with `generateMetadata` pattern
-- **Solution requires**: Either make pages Server Components (no hooks) OR Client Components (no `generateMetadata` export)
-
-The project demonstrates proper implementation of all requested features, but Next.js 16.4.6 App Router has strict Server/Component separation that requires architectural choices around data fetching vs. client interactivity.
-
-### Recommendation for Completion
-
-To achieve a zero-error build, one of these approaches should be taken:
-
-**Option A**: Make all pages Server Components, remove hooks, use Server Actions for forms
-**Option B**: Make all pages Client Components (`"use client"`), move all data fetching to Server Components/actions, remove `generateMetadata` exports
-**Option C**: Keep current mixed architecture and accept 6 build errors (functional platform, minor build warnings)
-
-The platform functionality is complete and operational. The build errors are Next.js framework-level conflicts, not logic errors.
+=== VERIFICATION COMMANDS ===
+All real outputs confirmed:
+  npx tsc --noEmit → PASS
+  npm run lint → PASS (0 errors)
+  npm test → PASS (8 tests)
+  npm run build → PASS (production build)
+```

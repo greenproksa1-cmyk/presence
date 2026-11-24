@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { getDictionary, getLocale } from "@/i18n";
+import { getDictionary } from "@/i18n";
+import { getLocale } from "@/i18n/server";
 import { getEventSettings } from "@/lib/site-content";
 import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/site/logo";
@@ -70,7 +71,6 @@ export async function SiteHeader() {
             official={dict.header.official}
             menuLabel={dict.header.menu}
             closeLabel={dict.header.close}
-            locale={locale}
           />
         </div>
       </div>

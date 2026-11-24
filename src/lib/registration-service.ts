@@ -32,10 +32,6 @@ export class RegistrationSystemError extends Error {
   }
 }
 
-export interface RegistrationMeta {
-  ipHash: string | null;
-}
-
 function isUniqueViolation(error: unknown): boolean {
   return (
     error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
@@ -80,7 +76,6 @@ export interface CreatedRegistration {
  */
 export async function createRegistration(
   input: RegistrationInput,
-  _meta: RegistrationMeta,
 ): Promise<CreatedRegistration> {
   const emailNormalized = normalizeEmail(input.email);
   const phoneNormalized = normalizePhone(input.phone, input.countryCode);

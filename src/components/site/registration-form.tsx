@@ -22,14 +22,12 @@ export function RegistrationForm({
   countries,
   orgTypes,
   turnstileSiteKey,
-  startedAt,
 }: {
   locale: Locale;
   dict: Dictionary;
   countries: CountryOption[];
   orgTypes: Array<{ value: OrganizationTypeKey; label: string }>;
   turnstileSiteKey: string | null;
-  startedAt: number;
 }) {
   const [state, action, pending] = useActionState<RegistrationActionState, FormData>(
     registerAction,
@@ -38,10 +36,16 @@ export function RegistrationForm({
   const [turnstileNonce, setTurnstileNonce] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const startedAtRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Render-time clock access is impure; the timestamp is stamped on mount and
+    // submitted with the form for the server-side minimum-time bot check.
+    if (startedAtRef.current) startedAtRef.current.value = String(Date.now());
+  }, []);
 
   useEffect(() => {
     if (!state.formError && !state.fieldErrors) return;
-    setTurnstileNonce((value) => value + 1);
     const firstInvalid = formRef.current?.querySelector<HTMLElement>(
       "[aria-invalid='true']",
     );
@@ -51,7 +55,15 @@ export function RegistrationForm({
     } else {
       errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  }, [state]);
+
+    if (!turnstileSiteKey) return;
+    // Turnstile tokens are single-use: remount the widget after a failed
+    // submission. The timeout keeps the state update out of the effect body.
+    const timer = window.setTimeout(() => {
+      setTurnstileNonce((value) => value + 1);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [state, turnstileSiteKey]);
 
   const errors = state.fieldErrors ?? {};
   const r = dict.register;
@@ -65,7 +77,7 @@ export function RegistrationForm({
       className="relative"
       aria-describedby={state.formError ? "registration-error" : undefined}
     >
-      <input type="hidden" name="startedAt" value={startedAt} />
+      <input ref={startedAtRef} type="hidden" name="startedAt" defaultValue="0" />
       <input type="hidden" name="locale" value={locale} />
       <div className="sr-only absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
         <label htmlFor="website">Website</label>

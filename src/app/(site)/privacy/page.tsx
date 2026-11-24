@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone } from "lucide-react";
-import { getDictionary, getLocale, localized } from "@/i18n";
+import { getDictionary, localized } from "@/i18n";
+import { getLocale } from "@/i18n/server";
 import { getEventSettings, formatEventDateCompact } from "@/lib/site-content";
 import { PageHero } from "@/components/site/page-hero";
 import { buttonVariants } from "@/components/ui/button";
@@ -31,7 +32,6 @@ export default async function PrivacyPage() {
         eyebrow={dict.privacy.eyebrow}
         title={localized(privacy.title, locale)}
         description={localized(privacy.intro, locale)}
-        locale={locale}
         homeLabel={dict.nav.home}
         currentLabel={dict.nav.privacy}
       >

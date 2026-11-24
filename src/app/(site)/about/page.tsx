@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, MapPin, QrCode, ShieldCheck, Ticket } from "lucide-react";
-import { getDictionary, getLocale, localized } from "@/i18n";
+import { getDictionary, localized } from "@/i18n";
+import { getLocale } from "@/i18n/server";
 import { getEventSettings, formatEventDate } from "@/lib/site-content";
 import { PageHero } from "@/components/site/page-hero";
 import { AudienceSection } from "@/components/site/audience-section";
@@ -36,7 +37,6 @@ export default async function AboutPage() {
         eyebrow={dict.about.eyebrow}
         title={localized(about.title, locale)}
         description={localized(about.lead, locale)}
-        locale={locale}
         homeLabel={dict.nav.home}
         currentLabel={dict.nav.about}
       >

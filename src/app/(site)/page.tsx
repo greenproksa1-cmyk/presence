@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getDictionary, getLocale, localized } from "@/i18n";
+import { getDictionary, localized } from "@/i18n";
+import { getLocale } from "@/i18n/server";
 import { getEventSettings, formatEventDate, EVENT_TIMEZONE } from "@/lib/site-content";
 import { getSiteUrl } from "@/lib/crypto";
 import { Hero } from "@/components/site/hero";

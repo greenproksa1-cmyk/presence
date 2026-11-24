@@ -104,7 +104,7 @@ export async function registerAction(
 
   let created: Awaited<ReturnType<typeof createRegistration>>;
   try {
-    created = await createRegistration(input, { ipHash });
+    created = await createRegistration(input);
   } catch (error) {
     if (error instanceof DuplicateRegistrationError) {
       const field = error.field === "phone" ? "phone" : "email";
